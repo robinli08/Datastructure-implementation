@@ -33,7 +33,7 @@ int main(int argc, const char * argv[]) {
     for (i = 0; i < 5; i ++) {
         for (j = 0; j < 5; j ++) {
             if (i <= j) {
-                Index = (11.i) * i / 2 + (j - i);
+                Index = (11 - i) * i / 2 + (j - i);
                 RowMajor[Index] = Upper[i][j];
             }
         }
