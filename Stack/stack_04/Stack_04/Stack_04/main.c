@@ -1,15 +1,16 @@
 //
 //  main.c
-//  Stack_03
+//  Stack_04
 //
-//  Created by robin on 6/29/16.
+//  Created by robin on 7/1/16.
 //  Copyright © 2016 robin. All rights reserved.
 //
 
 #include <stdio.h>
 #include <stdlib.h>
 
-struct s_node {
+struct s_node{
+    
     int data;
     struct s_node *next;
 };
@@ -17,16 +18,17 @@ struct s_node {
 typedef struct s_node s_list;
 typedef s_list *Link;
 
-Link operator = NULL;
-Link operand = NULL;
+Link prefix=NULL;
+Link operand=NULL;
 
-Link push (Link stack, int value) {
+Link push(Link stack, int value) {
     
     Link newNode;
-    newNode = (Link) malloc (sizeof(s_list));
+    
+    newNode = (Link)malloc(sizeof(s_list));
     
     if (!newNode) {
-        printf("\n Memory allocation failure !!");
+        printf("\n Memory allocation failure!!");
         return NULL;
     }
     
@@ -36,7 +38,7 @@ Link push (Link stack, int value) {
     return stack;
 }
 
-Link pop (Link stack, int *value) {
+Link pop (Link stack,int *value) {
     
     Link top;
     
@@ -81,31 +83,9 @@ int is_operator (char operator) {
     }
 }
 
-int priority (char operator) {
+int two_result (int operator,int operand1,int operand2) {
     
     switch (operator) {
-        case '+':
-            return 1;
-            break;
-        case '-':
-            return 1;
-            break;
-        case '*':
-            return 2;
-            break;
-        case '/':
-            return 2;
-            break;
-        default:
-            return 0;
-            break;
-    }
-}
-
-int two_result (int operator, int operand1,int operand2) {
-    
-    switch (operator)
-    {
         case '+':
             return (operand1 + operand2);
             break;
@@ -128,44 +108,34 @@ int main(int argc, const char * argv[]) {
     
     char expression[50];
     int position = 0;
-    int op = 0;
     int operand1 = 0;
     int operand2 = 0;
     int evaluate = 0;
+    int token = 0;
     
-    printf("\n Please input the in order expression : ");
+    printf("\nPlease input the preorder expression : ");
     
     gets(expression);
     
-    while (expression[position] != '\0' && expression[position] != '\n') {
-        if (is_operator(expression[position])) {
-            
-            if (!empty(operator)) {
-                
-                while (priority(expression[position]) <= priority(operator->data) && !empty(operator)) {
-                    
-                    operand = pop(operand, &operand1);
-                    operand = pop(operand, &operand2);
-                    operator = pop(operator, &op);
-                    operand = push(operand, two_result(op, operand1, operand2));
-                }
-            }
-            operator = push(operator, expression[position]);
-        } else {
-            operand = push(operator, expression[position] - 48);
-        }
+    while (expression[position]!='\0' && expression[position] !='\n') {
+        prefix = push(prefix, expression[position]);
         position ++;
     }
     
-    while (!empty(operator)) {
-        operator = pop(operator, &op);
-        operand = pop(operand, &operand1);
-        operand = pop(operand, &operand2);
-        operand = push(operand, two_result(op, operand1, operand2));
+    while (!empty(prefix)) {
+        prefix = pop(prefix, &token);
+        
+        if (is_operator(token)) {
+            operand = pop(operand, &operand1);
+            operand = pop(operand, &operand2);
+            operand = push(operand, two_result(token, operand2, operand1));
+        } else {
+            operand = push(operand, token-48);
+        }
+    
     }
     
     operand = pop(operand, &evaluate);
     printf("The expression [%s] result is '%d'",expression,evaluate);
-    
     return 0;
 }
